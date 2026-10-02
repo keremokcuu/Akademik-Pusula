@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akademik Pusula | Üniversite Öğrenci Kariyer Platformu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0fdff 0%, #f8fafc 50%, #f1f5f9 100%); background-attachment: fixed; }
+        #sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-closed { margin-left: -18rem; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .logo-palette-gradient { background: linear-gradient(135deg, #0a192f 0%, #0d9488 50%, #14b8a6 100%); }
+
+        /* Koyu Tema Stilleri */
+        body.dark-mode { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #090d16 100%) !important; color: #f1f5f9 !important; }
+        body.dark-mode #sidebar { background-color: rgba(15, 23, 42, 0.95) !important; border-color: rgba(51, 65, 85, 0.8) !important; }
+        body.dark-mode header { background-color: rgba(15, 23, 42, 0.9) !important; border-color: rgba(51, 65, 85, 0.8) !important; }
+        body.dark-mode header div span { color: #94a3b8 !important; }
+        body.dark-mode .glass-card { background: rgba(30, 41, 59, 0.85) !important; border-color: rgba(51, 65, 85, 0.8) !important; color: #f1f5f9 !important; }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 { color: #f8fafc !important; }
+        body.dark-mode .text-slate-600, body.dark-mode .text-slate-700, body.dark-mode .text-slate-500 { color: #cbd5e1 !important; }
+        body.dark-mode aside a.text-slate-600 { color: #cbd5e1 !important; }
+        body.dark-mode aside a.text-slate-600:hover { background-color: rgba(51, 65, 85, 0.5) !important; }
+        body.dark-mode footer { background-color: #090d16 !important; border-color: rgba(51, 65, 85, 0.8) !important; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex h-screen overflow-hidden">
+
+    <!-- SOL MENÜ -->
+    <aside id="sidebar" class="w-72 bg-white/95 backdrop-blur-md border-r border-slate-200/80 flex flex-col justify-between shrink-0 h-full z-30 shadow-sm">
+        <div>
+            <div class="p-6 border-b border-slate-100 flex items-center justify-center bg-slate-50/50">
+                <img src="{{ url_for('static', filename='akpus.png') }}" alt="Logo" class="h-20 object-contain">
+            </div>
+
+            <div class="px-3 py-6 space-y-1.5">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl {% if active == 'home' %}bg-teal-50 text-teal-800 font-bold border-l-4 border-teal-600 shadow-sm{% else %}text-slate-600 hover:bg-slate-50 font-medium{% endif %} text-sm transition-all">
+                    <svg class="w-5 h-5 {% if active == 'home' %}text-teal-600{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Ana Sayfa
+                </a>
+
+                <!-- TÜM FIRSATLAR AKORDEON -->
+                <div class="space-y-1 pt-1">
+                    <button onclick="toggleDropdown()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl {% if active in ['tum', 'staj', 'burs', 'tekno'] %}bg-teal-50 text-teal-800 font-bold border-l-4 border-teal-600 shadow-sm{% else %}text-slate-600 hover:bg-slate-50 font-medium{% endif %} text-sm transition-all cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 {% if active in ['tum', 'staj', 'burs', 'tekno'] %}text-teal-600{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <span>Tüm Fırsatlar</span>
+                        </div>
+                        <svg id="dropdownArrow" class="w-4 h-4 transition-transform duration-200 {% if active in ['tum', 'staj', 'burs', 'tekno'] %}rotate-180 text-teal-600{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+
+                    <div id="dropdownMenu" class="pl-6 space-y-1 border-l-2 border-slate-100 ml-4 my-1 {% if active not in ['tum', 'staj', 'burs', 'tekno'] %}hidden{% endif %} transition-all">
+                        <a href="/stajlar" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {% if active == 'staj' %}bg-teal-50/80 text-teal-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 font-medium{% endif %} text-xs transition-all">
+                            <span class="w-1.5 h-1.5 rounded-full {% if active == 'staj' %}bg-teal-600{% else %}bg-slate-300{% endif %}"></span>
+                            Staj Programları
+                        </a>
+                        <a href="/burslar" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {% if active == 'burs' %}bg-teal-50/80 text-teal-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 font-medium{% endif %} text-xs transition-all">
+                            <span class="w-1.5 h-1.5 rounded-full {% if active == 'burs' %}bg-teal-600{% else %}bg-slate-300{% endif %}"></span>
+                            Burs İlanları
+                        </a>
+                        <a href="/teknofest" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {% if active == 'tekno' %}bg-teal-50/80 text-teal-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 font-medium{% endif %} text-xs transition-all">
+                            <span class="w-1.5 h-1.5 rounded-full {% if active == 'tekno' %}bg-teal-600{% else %}bg-slate-300{% endif %}"></span>
+                            TEKNOFEST & Projeler
+                        </a>
+                    </div>
+                </div>
+
+                <a href="/etkinlikler" class="flex items-center gap-3 px-4 py-3 rounded-xl {% if active == 'events' %}bg-teal-50 text-teal-800 font-bold border-l-4 border-teal-600 shadow-sm{% else %}text-slate-600 hover:bg-slate-50 font-medium{% endif %} text-sm transition-all">
+                    <svg class="w-5 h-5 {% if active == 'events' %}text-teal-600{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Etkinlikler & Zirveler
+                </a>
+
+                <a href="/kaydedilenler" class="flex items-center gap-3 px-4 py-3 rounded-xl {% if active == 'saved' %}bg-teal-50 text-teal-800 font-bold border-l-4 border-teal-600 shadow-sm{% else %}text-slate-600 hover:bg-slate-50 font-medium{% endif %} text-sm transition-all">
+                    <svg class="w-5 h-5 {% if active == 'saved' %}text-teal-600{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    Kaydedilenler (<span id="saved-count">0</span>)
+                </a>
+            </div>
+        </div>
+
+        <!-- SOL MENÜ EN ALT KISIM -->
+        <div class="p-5 border-t border-slate-100 space-y-3 bg-white/50">
+            <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs cursor-pointer">
+                <span id="themeText" class="flex items-center gap-2">🌙 Koyu Tema</span>
+                <div class="w-8 h-4 bg-slate-300 rounded-full relative p-0.5 transition-colors" id="themeToggleBg">
+                    <div class="w-3 h-3 bg-white rounded-full transition-transform" id="themeToggleDot"></div>
+                </div>
+            </button>
+
+            <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200/80 text-center shadow-2xs">
+                <span class="text-xs font-bold text-slate-700 block mb-0.5">Akademik Pusula v2.0</span>
+                <span class="text-[11px] font-semibold text-teal-600 tracking-wide block">By Kerem & Göknil ✨</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- SAĞ ANA İÇERİK -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-6 lg:px-8 py-4 flex justify-between items-center sticky top-0 z-40 shadow-xs">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 rounded-xl transition-colors flex items-center justify-center shadow-sm cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="text-sm font-medium text-slate-500 hidden sm:block"><span>Üniversite Öğrenci Kariyer Platformu</span></div>
+            </div>
+            <div class="text-sm font-bold text-teal-800 bg-teal-50 px-4 py-2 rounded-full border border-teal-200 shadow-sm">
+                <span>🎓 100+ Aktif Fırsat</span>
+            </div>
+        </header>
+
+        <div class="p-6 lg:p-12 max-w-7xl mx-auto w-full space-y-12 flex-1">
+            
+            <!-- HERO BANNER -->
+            <div class="logo-palette-gradient py-20 px-8 lg:px-16 text-center rounded-[2.5rem] shadow-2xl relative overflow-hidden text-white">
+                <div class="absolute -top-32 -left-32 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-400/20 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="max-w-3xl mx-auto relative z-10">
+                    <div class="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 px-4 py-1.5 rounded-full text-amber-300 text-xs font-bold uppercase tracking-wider mb-6 shadow-sm">
+                        <span> Tüm Bölümler ve Tüm Öğrenciler İçin</span>
+                    </div>
+                    <h1 class="text-4xl lg:text-6xl font-extrabold mb-6 tracking-tight leading-tight">
+                        Geleceğini Şekillendir, <span class="text-amber-400">Fırsatları Yakala!</span>
+                    </h1>
+                    <p class="text-teal-100 text-base lg:text-lg mb-8 font-light leading-relaxed">
+                        Yüzlerce staj, burs, TEKNOFEST projesi ve etkinlik seni bekliyor.
+                    </p>
+                    
+                    <form method="POST" class="flex gap-2 bg-white/95 backdrop-blur p-2 rounded-full shadow-2xl focus-within:ring-4 focus-within:ring-teal-500/30 transition-all mb-4">
+                        <input type="text" name="user_tags" placeholder="Bölüm veya ilginiz (Örn: Hukuk, Tıp, İktisat, Python)..." required 
+                               class="flex-1 px-6 py-3 rounded-full outline-none text-slate-700 bg-transparent text-base font-medium placeholder-slate-400">
+                        <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-full font-bold transition-all shadow-md hover:shadow-lg cursor-pointer">
+                            Fırsat Ara
+                        </button>
+                    </form>
+
+                    <!-- Hızlı Arama Etiket Çipleri -->
+                    <div class="flex flex-wrap items-center justify-center gap-2 text-xs font-medium text-teal-100">
+                        <span class="opacity-75">Popüler Aramalar:</span>
+                        <a href="/stajlar?bolum=bilgisayar" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition-colors border border-white/10">#YazılımStajı</a>
+                        <a href="/burslar" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition-colors border border-white/10">#KarşılıksızBurs</a>
+                        <a href="/teknofest" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition-colors border border-white/10">#TEKNOFEST</a>
+                        <a href="/stajlar?bolum=hukuk" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition-colors border border-white/10">#Hukuk</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CANLI DUYURU BANTI -->
+            <div class="bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 text-white px-6 py-4 rounded-2xl shadow-md flex flex-col md:flex-row items-center justify-between gap-4 border border-teal-700/50">
+                <div class="flex items-center gap-3">
+                    <span class="bg-amber-400 text-slate-900 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider animate-pulse">Son Dakika</span>
+                    <p class="text-xs sm:text-sm font-medium text-teal-100">
+                        🚀 <strong>TÜBİTAK 2209-A / B</strong> Üniversite Öğrencileri Araştırma Projeleri desteği için son başvuru tarihi yaklaşıyor!
+                    </p>
+                </div>
+                <a href="/teknofest" class="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all border border-white/20 shrink-0">
+                    Detayları İncele →
+                </a>
+            </div>
+
+            <!-- POPÜLER BÖLÜM ROZETLERİ -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-extrabold text-slate-800 tracking-tight">📚 Popüler Fakülteler & Bölümler</h3>
+                    <span class="text-xs font-semibold text-slate-400">Alanına Göre Keşfet</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <a href="/stajlar?bolum=bilgisayar" class="glass-card p-4 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-lg transition-all text-center group">
+                        <span class="text-2xl block mb-2 group-hover:scale-110 transition-transform">💻</span>
+                        <h4 class="text-xs font-bold text-slate-800 group-hover:text-teal-600 transition-colors">Yazılım & Bilişim</h4>
+                    </a>
+                    <a href="/stajlar?bolum=hukuk" class="glass-card p-4 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-lg transition-all text-center group">
+                        <span class="text-2xl block mb-2 group-hover:scale-110 transition-transform">⚖️</span>
+                        <h4 class="text-xs font-bold text-slate-800 group-hover:text-teal-600 transition-colors">Hukuk & Adalet</h4>
+                    </a>
+                    <a href="/stajlar?bolum=tıp" class="glass-card p-4 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-lg transition-all text-center group">
+                        <span class="text-2xl block mb-2 group-hover:scale-110 transition-transform">🩺</span>
+                        <h4 class="text-xs font-bold text-slate-800 group-hover:text-teal-600 transition-colors">Sağlık & Tıp</h4>
+                    </a>
+                    <a href="/stajlar?bolum=endüstri" class="glass-card p-4 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-lg transition-all text-center group">
+                        <span class="text-2xl block mb-2 group-hover:scale-110 transition-transform">⚙️</span>
+                        <h4 class="text-xs font-bold text-slate-800 group-hover:text-teal-600 transition-colors">Mühendislik</h4>
+                    </a>
+                    <a href="/burslar" class="glass-card p-4 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-lg transition-all text-center group">
+                        <span class="text-2xl block mb-2 group-hover:scale-110 transition-transform">🎓</span>
+                        <h4 class="text-xs font-bold text-slate-800 group-hover:text-teal-600 transition-colors">Eğitim Bursları</h4>
+                    </a>
+                    <a href="/etkinlikler" class="glass-card p-4 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-lg transition-all text-center group">
+                        <span class="text-2xl block mb-2 group-hover:scale-110 transition-transform">🌟</span>
+                        <h4 class="text-xs font-bold text-slate-800 group-hover:text-teal-600 transition-colors">Zirveler & Etkinlik</h4>
+                    </a>
+                </div>
+            </div>
+
+
+            <!-- ÖNE ÇIKAN / KRİTİK İLANLAR -->
+            <div id="ilanlar">
+                <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">🔥 Son Günü Yaklaşan Öne Çıkan İlanlar</h2>
+                        <p class="text-xs text-slate-500 mt-1">Süresi daralan popüler kariyer fırsatları.</p>
+                    </div>
+                    <a href="/tum-firsatlar" class="text-teal-700 hover:underline font-bold text-sm bg-teal-50 px-4 py-2 rounded-xl border border-teal-200 shadow-2xs">Tümünü Gör →</a>
+                </div>
+                
+                {% if all_opps %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {% for opp in all_opps %}
+                        <div onclick="openModal('{{ opp[1]|e }}', '{{ opp[2]|e }}', '{{ opp[3]|e }}', '{{ opp[5]|e }}', `{{ opp[6]|e }}`)" 
+                             class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-xl hover:border-teal-500 transition-all duration-300 group flex flex-col relative cursor-pointer">
+                            
+                            <button onclick="event.stopPropagation(); toggleSave(this, '{{ opp[1]|e }}', '{{ opp[2]|e }}', '{{ opp[3]|e }}', '{{ opp[5]|e }}')" 
+                                    class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-teal-50 text-slate-400 hover:text-teal-600 flex items-center justify-center transition-all shadow-sm save-btn cursor-pointer z-10" title="Kaydet">
+                                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                            </button>
+
+                            <div class="flex items-center gap-2 mb-4 pr-10">
+                                <span class="bg-teal-50 text-teal-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-teal-200">{{ opp[2] }}</span>
+                                <span class="bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border border-amber-200">⭐ Popüler</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-4 group-hover:text-teal-700 transition-colors leading-snug">{{ opp[1] }}</h3>
+                            
+                            <div class="flex flex-wrap gap-1.5 mb-6">
+                            {% if opp[5] %}
+                                {% for tag in opp[5].split(',') %}
+                                    <span class="bg-slate-100/60 text-slate-600 px-2.5 py-0.5 rounded-md text-xs font-semibold border border-slate-200/60">#{{ tag.strip() }}</span>
+                                {% endfor %}
+                            {% endif %}
+                            </div>
+
+                            <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-100/80">
+                                <span class="deadline-badge font-bold text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg" data-deadline="{{ opp[3] }}">
+                                    ⏳ Son Gün: {{ opp[3] }}
+                                </span>
+                                <button onclick="event.stopPropagation(); openModal('{{ opp[1]|e }}', '{{ opp[2]|e }}', '{{ opp[3]|e }}', '{{ opp[5]|e }}', `{{ opp[6]|e }}`)" 
+                                        class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-sm cursor-pointer">
+                                    Başvur
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="glass-card text-slate-500 p-12 rounded-2xl text-center border border-slate-200 font-medium text-lg shadow-sm">
+                        Gösterilecek aktif kritik ilan bulunmuyor.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- ÖĞRENCİ BAŞARI & İLHAM KÖŞESİ -->
+            <div class="logo-palette-gradient p-8 lg:p-10 rounded-3xl text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 text-center md:text-left">
+                    <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Başarı Hikayesi 🌟</span>
+                    <h3 class="text-xl font-extrabold">"Akademik Pusula üzerinden başvurduğum staj kabulüm açıklandı!"</h3>
+                    <p class="text-xs text-teal-100 font-light">Binlerce üniversite öğrencisi gibi siz de kariyerinizde ilk adımı atın.</p>
+                </div>
+                <a href="/etkinlikler" class="bg-white hover:bg-slate-100 text-teal-900 font-bold px-6 py-3 rounded-2xl text-xs transition-all shadow-md shrink-0">
+                    Zirveleri Keşfet 🎯
+                </a>
+            </div>
+
+<!-- 4. KARİYER REHBERİ & FAYDALI YAZILAR -->
+            <div class="my-12">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-800 tracking-tight">✍️ Kariyer Rehberi & Blog</h3>
+                        <p class="text-xs text-slate-500 mt-1">Staj ve mülakat süreçlerinde işinizi kolaylaştıracak ipuçları.</p>
+                    </div>
+                    <span class="text-xs font-semibold text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">Yeni Yazılar</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Yazı 1 -->
+                    <div class="glass-card p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:border-teal-500 transition-all flex flex-col justify-between group">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-teal-50 text-teal-700 px-3 py-1 rounded-full text-[11px] font-bold">CV Hazırlama</span>
+                                <span class="text-[11px] text-slate-400 font-medium">3 dk okuma</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-800 group-hover:text-teal-700 transition-colors">Staj Başvurularında Öne Çıkacak Etkili CV Nasıl Hazırlanır?</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed font-light">İK uzmanlarının ilk incelemede dikkat ettiği anahtar kelimeler, proje eklemeleri ve yapı taşları.</p>
+                        </div>
+                        <a href="#" class="text-xs font-bold text-teal-600 mt-6 inline-flex items-center gap-1 hover:underline">Yazıyı Oku →</a>
+                    </div>
+
+                    <!-- Yazı 2 -->
+                    <div class="glass-card p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:border-teal-500 transition-all flex flex-col justify-between group">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-[11px] font-bold">Mülakat Taktikleri</span>
+                                <span class="text-[11px] text-slate-400 font-medium">5 dk okuma</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-800 group-hover:text-amber-600 transition-colors">Teknik Mülakatlarda En Sık Sorulan Sorular ve Cevapları</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed font-light">Yazılım, mühendislik ve idari pozisyonlardaki mülakatlarda heyecanınızı yenme ve doğru sunum teknikleri.</p>
+                        </div>
+                        <a href="#" class="text-xs font-bold text-amber-600 mt-6 inline-flex items-center gap-1 hover:underline">Yazıyı Oku →</a>
+                    </div>
+
+                    <!-- Yazı 3 -->
+                    <div class="glass-card p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:border-teal-500 transition-all flex flex-col justify-between group">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-[11px] font-bold">Yabancı Dil</span>
+                                <span class="text-[11px] text-slate-400 font-medium">4 dk okuma</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-800 group-hover:text-indigo-700 transition-colors">Üniversite Öğrencileri İçin Teknik İngilizce Geliştirme Rehberi</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed font-light">Reader at Work, makale okuma alışkanlıkları ve uluslararası mülakatlar için dil barajını aşma yolları.</p>
+                        </div>
+                        <a href="#" class="text-xs font-bold text-indigo-600 mt-6 inline-flex items-center gap-1 hover:underline">Yazıyı Oku →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIKÇA SORULAN SORULAR (AKORDEON) -->
+            <div class="my-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-extrabold text-slate-800 tracking-tight">❓ Sıkça Sorulan Sorular</h3>
+                    <span class="text-xs font-semibold text-slate-400">Merak Edilenler</span>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="glass-card rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden transition-all">
+                        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-5 text-left font-bold text-sm text-slate-800 hover:bg-slate-50/50 transition-colors cursor-pointer">
+                            <span>1. Akademik Pusula nedir ve kimler için tasarlanmıştır?</span>
+                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-content hidden px-5 pb-5 text-xs text-slate-600 leading-relaxed font-light border-t border-slate-100 pt-3">
+                            Akademik Pusula; mühendislikten hukuka, tıptan iktisata kadar üniversite öğrencilerinin kariyer yolculuklarında staj, burs, TEKNOFEST projeleri ve zirvelere tek tıkla ulaşmasını sağlayan yeni nesil öğrenci platformudur.
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden transition-all">
+                        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-5 text-left font-bold text-sm text-slate-800 hover:bg-slate-50/50 transition-colors cursor-pointer">
+                            <span>2. Staj ilanlarına başvuru yaparken sigortam üniversite tarafından mı karşılanıyor?</span>
+                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-content hidden px-5 pb-5 text-xs text-slate-600 leading-relaxed font-light border-t border-slate-100 pt-3">
+                            Evet, zorunlu staj yapan öğrencilerin iş kazası ve meslek hastalığı sigortası üniversiteleri tarafından karşılanmaktadır.
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden transition-all">
+                        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-5 text-left font-bold text-sm text-slate-800 hover:bg-slate-50/50 transition-colors cursor-pointer">
+                            <span>3. Beğendiğim ve ilgilendiğim ilanları daha sonra nerede bulabilirim?</span>
+                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-content hidden px-5 pb-5 text-xs text-slate-600 leading-relaxed font-light border-t border-slate-100 pt-3">
+                            İlan kartlarının sağ üst köşesindeki kaydet butonuna basarak sol menüdeki "Kaydedilenler" sekmesinden tüm favorilerinize ulaşabilirsiniz.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HIZLI KATEGORİLER -->
+            <div class="my-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-extrabold text-slate-800 tracking-tight">🎯 Kariyer Alanınızı Seçin</h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <a href="/stajlar" class="glass-card p-6 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-xl transition-all group flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-lg mb-4 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-2xs">💼</div>
+                            <h4 class="text-base font-bold text-slate-800 mb-1 group-hover:text-teal-700 transition-colors">Staj Programları</h4>
+                            <p class="text-xs text-slate-500 font-light">Mühendislikten hukuka tüm bölümler için stajlar.</p>
+                        </div>
+                        <span class="text-xs font-bold text-teal-600 mt-6 inline-flex items-center gap-1">İlanları Gör →</span>
+                    </a>
+                    <a href="/burslar" class="glass-card p-6 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-xl transition-all group flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg mb-4 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-2xs">🎓</div>
+                            <h4 class="text-base font-bold text-slate-800 mb-1 group-hover:text-amber-600 transition-colors">Eğitim Bursları</h4>
+                            <p class="text-xs text-slate-500 font-light">Öğrencilere özel karşılıksız kurum ve vakıf bursları.</p>
+                        </div>
+                        <span class="text-xs font-bold text-amber-600 mt-6 inline-flex items-center gap-1">Bursları İncele →</span>
+                    </a>
+                    <a href="/teknofest" class="glass-card p-6 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-xl transition-all group flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-2xs">🚀</div>
+                            <h4 class="text-base font-bold text-slate-800 mb-1 group-hover:text-indigo-700 transition-colors">TEKNOFEST & Projeler</h4>
+                            <p class="text-xs text-slate-500 font-light">TÜBİTAK ve teknoloji yarışmaları için ilanlar.</p>
+                        </div>
+                        <span class="text-xs font-bold text-indigo-600 mt-6 inline-flex items-center gap-1">Projeleri Keşfet →</span>
+                    </a>
+                    <a href="/etkinlikler" class="glass-card p-6 rounded-2xl border border-slate-200/80 hover:border-teal-500 hover:shadow-xl transition-all group flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg mb-4 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-2xs">🎙️</div>
+                            <h4 class="text-base font-bold text-slate-800 mb-1 group-hover:text-rose-700 transition-colors">Zirveler & Etkinlikler</h4>
+                            <p class="text-xs text-slate-500 font-light">Kariyer zirveleri ve sertifikalı eğitimler.</p>
+                        </div>
+                        <span class="text-xs font-bold text-rose-600 mt-6 inline-flex items-center gap-1">Takvime Bak →</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PROFESYONEL FOOTER -->
+        <footer class="bg-slate-900 text-slate-300 border-t border-slate-800 pt-16 pb-12 px-8 lg:px-16 mt-auto">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ url_for('static', filename='akpus.png') }}" alt="Logo" class="h-9 w-auto object-contain rounded-lg bg-white/10 p-1">
+                        <span class="text-white font-extrabold text-lg tracking-tight">Akademik Pusula</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed font-light">
+                        Üniversite öğrencilerinin kariyer yolculuklarında staj, burs, TEKNOFEST projeleri ve zirvelere tek tıkla ulaşmasını sağlayan yeni nesil öğrenci platformu.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="text-white font-bold text-sm uppercase tracking-wider border-b border-slate-800 pb-2">Hızlı Erişim</h4>
+                    <ul class="space-y-2 text-xs font-medium text-slate-400">
+                        <li><a href="/" class="hover:text-teal-400 transition-colors">Ana Sayfa</a></li>
+                        <li><a href="/stajlar" class="hover:text-teal-400 transition-colors">Staj Programları</a></li>
+                        <li><a href="/burslar" class="hover:text-teal-400 transition-colors">Burs İlanları</a></li>
+                        <li><a href="/teknofest" class="hover:text-teal-400 transition-colors">TEKNOFEST & Projeler</a></li>
+                        <li><a href="/etkinlikler" class="hover:text-teal-400 transition-colors">Etkinlikler & Zirveler</a></li>
+                    </ul>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="text-white font-bold text-sm uppercase tracking-wider border-b border-slate-800 pb-2">Popüler Alanlar</h4>
+                    <ul class="space-y-2 text-xs font-medium text-slate-400">
+                        <li><a href="/stajlar?bolum=bilgisayar" class="hover:text-teal-400 transition-colors">Yazılım & Bilişim Stajları</a></li>
+                        <li><a href="/stajlar?bolum=hukuk" class="hover:text-teal-400 transition-colors">Hukuk & Stajyer Avukatlık</a></li>
+                        <li><a href="/stajlar?bolum=tıp" class="hover:text-teal-400 transition-colors">Sağlık & Tıp Fakültesi</a></li>
+                        <li><a href="/stajlar?bolum=endüstri" class="hover:text-teal-400 transition-colors">Mühendislik Projeleri</a></li>
+                        <li><a href="/burslar" class="hover:text-teal-400 transition-colors">Karşılıksız Eğitim Bursları</a></li>
+                    </ul>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="text-white font-bold text-sm uppercase tracking-wider border-b border-slate-800 pb-2">İletişim</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Sorularınız ve önerileriniz için bizimle iletişime geçebilirsiniz.</p>
+                    <p class="text-xs text-teal-400 font-medium">destek@akademikpusula.com</p>
+                </div>
+            </div>
+            <div class="max-w-7xl mx-auto pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>Akademik Pusula Kariyer Portali &copy; 2026 — Tüm Hakları Saklıdır.</p>
+                <div class="flex items-center gap-6">
+                    <span class="text-teal-400 font-bold tracking-wide">By Kerem & Göknil ✨</span>
+                    <a href="#" class="hover:text-slate-300 transition-colors">Kullanım Koşulları</a>
+                    <a href="#" class="hover:text-slate-300 transition-colors">Gizlilik Politikası</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-all duration-300">
+        <div class="bg-white rounded-[2.5rem] max-w-2xl w-full shadow-2xl border border-slate-100 relative overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="logo-palette-gradient p-8 text-white relative flex flex-col justify-between">
+                <button onclick="closeModal()" class="absolute top-6 right-6 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all cursor-pointer backdrop-blur-sm">✕</button>
+                <div class="flex flex-wrap items-center gap-3 mb-4 relative z-10">
+                    <span id="modalCategory" class="bg-white/20 backdrop-blur-md text-teal-100 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20"></span>
+                    <span id="modalDeadlineBadge" class="bg-amber-400 text-slate-900 px-3.5 py-1.5 rounded-full text-xs font-extrabold shadow-sm"></span>
+                </div>
+                <h2 id="modalTitle" class="text-2xl lg:text-3xl font-extrabold text-white leading-tight relative z-10"></h2>
+            </div>
+            <div class="p-8 overflow-y-auto space-y-6 flex-1 bg-gradient-to-b from-slate-50/50 to-white">
+                <p id="modalDescription" class="text-slate-600 text-base leading-relaxed whitespace-pre-line font-light"></p>
+            </div>
+            <div class="p-6 bg-white border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400">Akademik Pusula Kariyer Ağı</span>
+                <a href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3.5 rounded-2xl text-sm shadow-lg">Hemen Başvur 🚀</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('sidebar-closed'); }
+        
+        function toggleDropdown() {
+            const menu = document.getElementById('dropdownMenu');
+            const arrow = document.getElementById('dropdownArrow');
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        function toggleFaq(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('svg');
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        // Tema Değiştirme Fonksiyonu
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeUI(isDark);
+        }
+
+        function updateThemeUI(isDark) {
+            const themeText = document.getElementById('themeText');
+            const dot = document.getElementById('themeToggleDot');
+            const bg = document.getElementById('themeToggleBg');
+            if (isDark) {
+                themeText.innerHTML = '☀️ Açık Tema';
+                dot.style.transform = 'translateX(1rem)';
+                bg.style.backgroundColor = '#0d9488';
+            } else {
+                themeText.innerHTML = '🌙 Koyu Tema';
+                dot.style.transform = 'translateX(0)';
+                bg.style.backgroundColor = '#cbd5e1';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                updateThemeUI(true);
+            }
+
+            const today = new Date('2026-09-27');
+            document.querySelectorAll('.deadline-badge').forEach(badge => {
+                const deadlineStr = badge.getAttribute('data-deadline');
+                const diffDays = Math.ceil((new Date(deadlineStr) - today) / (1000 * 60 * 60 * 24));
+                if (diffDays <= 7 && diffDays >= 0) {
+                    badge.classList.remove('bg-rose-50', 'text-rose-500');
+                    badge.classList.add('bg-red-100', 'text-red-600', 'animate-pulse');
+                    badge.innerHTML = `🔥 Kritik: Son Gün ${deadlineStr}`;
+                } else { badge.classList.add('bg-rose-50', 'text-rose-500'); }
+            });
+        });
+
+        function openModal(title, kategori, deadline, tags, description) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalCategory').innerText = kategori;
+            const deadlineBadge = document.getElementById('modalDeadlineBadge');
+            const diffDays = Math.ceil((new Date(deadline) - new Date('2026-09-27')) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 7 && diffDays >= 0) {
+                deadlineBadge.className = "bg-rose-500 text-white px-3.5 py-1.5 rounded-full text-xs font-extrabold shadow-sm animate-pulse";
+                deadlineBadge.innerHTML = `🔥 Kritik: Son Gün ${deadline}`;
+            } else {
+                deadlineBadge.className = "bg-amber-400 text-slate-900 px-3.5 py-1.5 rounded-full text-xs font-extrabold shadow-sm";
+                deadlineBadge.innerHTML = `⏳ Son Başvuru: ${deadline}`;
+            }
+            document.getElementById('modalDescription').innerText = description || "Detaylı açıklama bulunmuyor.";
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.getElementById('detailModal').classList.add('flex');
+        }
+
+        function closeModal() { document.getElementById('detailModal').classList.remove('flex'); document.getElementById('detailModal').classList.add('hidden'); }
+        window.onclick = function(e) { if (e.target === document.getElementById('detailModal')) closeModal(); }
+        
+        function getSavedOpps() { return JSON.parse(localStorage.getItem('savedOpps') || '[]'); }
+        function updateSavedCount() { document.getElementById('saved-count').innerText = getSavedOpps().length; }
+        
+        window.onload = function() {
+            updateSavedCount();
+            const saved = getSavedOpps();
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                const match = btn.getAttribute('onclick').match(/'([^']+)'/);
+                if (match && saved.some(item => item.title === match[1])) {
+                    btn.classList.remove('bg-slate-100', 'text-slate-400');
+                    btn.classList.add('bg-teal-600', 'text-white', 'shadow-md');
+                    btn.querySelector('svg').setAttribute('fill', 'currentColor');
+                }
+            });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaydedilenler | Akademik Pusula</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0fdff 0%, #f8fafc 50%, #f1f5f9 100%); background-attachment: fixed; }
+        #sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-closed { margin-left: -18rem; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .logo-palette-gradient { background: linear-gradient(135deg, #0a192f 0%, #0d9488 50%, #14b8a6 100%); }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex h-screen overflow-hidden">
+
+    <!-- SOL MENÜ -->
+    <aside id="sidebar" class="w-72 bg-white/95 backdrop-blur-md border-r border-slate-200/80 flex flex-col justify-between shrink-0 h-full z-30 shadow-sm">
+        <div>
+            <div class="p-6 border-b border-slate-100 flex items-center justify-center bg-slate-50/50">
+                <img src="{{ url_for('static', filename='akpus.png') }}" alt="Logo" class="h-20 object-contain">
+            </div>
+
+            <div class="px-3 py-6 space-y-1.5">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium text-sm transition-all">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Ana Sayfa
+                </a>
+
+                <div class="space-y-1 pt-1">
+                    <button onclick="toggleDropdown()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium text-sm transition-all cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <span>Tüm Fırsatlar</span>
+                        </div>
+                        <svg id="dropdownArrow" class="w-4 h-4 transition-transform duration-200 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="dropdownMenu" class="pl-6 space-y-1 border-l-2 border-slate-100 ml-4 my-1 hidden transition-all">
+                        <a href="/stajlar" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-50 font-medium text-xs transition-all"><span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>Staj Programları</a>
+                        <a href="/burslar" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-50 font-medium text-xs transition-all"><span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>Burs İlanları</a>
+                        <a href="/teknofest" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-50 font-medium text-xs transition-all"><span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>TEKNOFEST & Projeler</a>
+                    </div>
+                </div>
+
+                <a href="/etkinlikler" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium text-sm transition-all">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Etkinlikler & Zirveler
+                </a>
+
+                <a href="/kaydedilenler" class="flex items-center gap-3 px-4 py-3 rounded-xl {% if active == 'saved' %}bg-teal-50 text-teal-800 font-bold border-l-4 border-teal-600 shadow-sm{% else %}text-slate-600 hover:bg-slate-50 font-medium{% endif %} text-sm transition-all">
+                    <svg class="w-5 h-5 {% if active == 'saved' %}text-teal-600{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    Kaydedilenler (<span id="saved-count">0</span>)
+                </a>
+            </div>
+        </div>
+        <div class="p-5 border-t border-slate-100">
+            <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200/80 text-center shadow-2xs">
+                <span class="text-xs font-bold text-slate-700 block mb-0.5">Akademik Pusula v2.0</span>
+                <span class="text-[11px] font-semibold text-teal-600 tracking-wide block">By Kerem & Göknil ✨</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- SAĞ İÇERİK -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-6 lg:px-8 py-4 flex justify-between items-center sticky top-0 z-40 shadow-xs">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 rounded-xl transition-colors flex items-center justify-center shadow-sm cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="text-sm font-medium text-slate-500 hidden sm:block"><span>Kaydedilen İlanlar</span></div>
+            </div>
+            <div class="text-sm font-bold text-teal-800 bg-teal-50 px-4 py-2 rounded-full border border-teal-200 shadow-sm">
+                <span>📌 Kayıtlı İlanlar</span>
+            </div>
+        </header>
+
+        <div class="p-6 lg:p-12 max-w-7xl mx-auto w-full">
+            <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">📌 Kaydettiğim Fırsatlar</h1>
+            </div>
+
+            <div id="saved-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('sidebar-closed'); }
+        function toggleDropdown() {
+            document.getElementById('dropdownMenu').classList.toggle('hidden');
+            document.getElementById('dropdownArrow').classList.toggle('rotate-180');
+        }
+        function getSavedOpps() { return JSON.parse(localStorage.getItem('savedOpps') || '[]'); }
+
+        function renderSavedOpps() {
+            const saved = getSavedOpps();
+            const container = document.getElementById('saved-container');
+            document.getElementById('saved-count').innerText = saved.length;
+
+            if (saved.length === 0) {
+                container.innerHTML = `<div class="col-span-full glass-card text-slate-500 p-12 rounded-2xl text-center border border-slate-200 font-medium text-lg">Henüz kaydedilmiş bir ilanınız bulunmuyor.</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            saved.forEach((opp) => {
+                let tagsHtml = '';
+                if (opp.tags) {
+                    opp.tags.split(',').forEach(tag => {
+                        if(tag.trim()) tagsHtml += `<span class="bg-slate-100/60 text-slate-600 px-2.5 py-0.5 rounded-md text-xs font-semibold border border-slate-200/60">#${tag.trim()}</span>`;
+                    });
+                }
+
+                container.innerHTML += `
+                    <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-xl hover:border-teal-500 transition-all duration-300 group flex flex-col relative">
+                        <button onclick="removeSaved('${opp.title}')" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-teal-600 text-white flex items-center justify-center transition-all shadow-sm cursor-pointer" title="Kayıttan Çıkar">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                        </button>
+                        <div class="flex justify-between items-start mb-4 pr-10">
+                            <span class="bg-teal-50 text-teal-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-teal-200">${opp.kategori}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-4 group-hover:text-teal-700 transition-colors leading-snug">${opp.title}</h3>
+                        <div class="flex flex-wrap gap-1.5 mb-6">${tagsHtml}</div>
+                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-100/80">
+                            <span class="text-rose-500 font-bold text-xs flex items-center gap-1 bg-rose-50 px-2.5 py-1 rounded-lg">⏳ Son Gün: ${opp.deadline}</span>
+                            <button class="bg-slate-50 hover:bg-teal-600 hover:text-white text-teal-700 font-bold px-4 py-2 rounded-xl text-xs transition-all border border-slate-200">Başvur</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function removeSaved(title) {
+            let saved = getSavedOpps();
+            saved = saved.filter(item => item.title !== title);
+            localStorage.setItem('savedOpps', JSON.stringify(saved));
+            renderSavedOpps();
+        }
+
+        window.onload = renderSavedOpps;
+    </script>
+</body>
+</html>

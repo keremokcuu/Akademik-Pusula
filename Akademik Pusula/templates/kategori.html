@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | Akademik Pusula</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0fdff 0%, #f8fafc 50%, #f1f5f9 100%); background-attachment: fixed; }
+        #sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-closed { margin-left: -18rem; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .logo-palette-gradient { background: linear-gradient(135deg, #0a192f 0%, #0d9488 50%, #14b8a6 100%); }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex h-screen overflow-hidden">
+
+    <!-- SOL MENÜ -->
+    <aside id="sidebar" class="w-72 bg-white/95 backdrop-blur-md border-r border-slate-200/80 flex flex-col justify-between shrink-0 h-full z-30 shadow-sm">
+        <div>
+            <div class="p-6 border-b border-slate-100 flex items-center justify-center bg-slate-50/50">
+                <img src="{{ url_for('static', filename='akpus.png') }}" alt="Logo" class="h-20 object-contain">
+            </div>
+
+            <div class="px-3 py-6 space-y-1.5">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium text-sm transition-all">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Ana Sayfa
+                </a>
+
+                <div class="space-y-1 pt-1">
+                    <button onclick="toggleDropdown()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl {% if active in ['tum', 'staj', 'burs', 'tekno'] %}bg-teal-50 text-teal-800 font-bold border-l-4 border-teal-600 shadow-sm{% else %}text-slate-600 hover:bg-slate-50 font-medium{% endif %} text-sm transition-all cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 {% if active in ['tum', 'staj', 'burs', 'tekno'] %}text-teal-600{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <span>Tüm Fırsatlar</span>
+                        </div>
+                        <svg id="dropdownArrow" class="w-4 h-4 transition-transform duration-200 {% if active in ['tum', 'staj', 'burs', 'tekno'] %}rotate-180 text-teal-600{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="dropdownMenu" class="pl-6 space-y-1 border-l-2 border-slate-100 ml-4 my-1 {% if active not in ['tum', 'staj', 'burs', 'tekno'] %}hidden{% endif %} transition-all">
+                        <a href="/stajlar" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {% if active == 'staj' %}bg-teal-50/80 text-teal-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 font-medium{% endif %} text-xs transition-all"><span class="w-1.5 h-1.5 rounded-full {% if active == 'staj' %}bg-teal-600{% else %}bg-slate-300{% endif %}"></span>Staj Programları</a>
+                        <a href="/burslar" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {% if active == 'burs' %}bg-teal-50/80 text-teal-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 font-medium{% endif %} text-xs transition-all"><span class="w-1.5 h-1.5 rounded-full {% if active == 'burs' %}bg-teal-600{% else %}bg-slate-300{% endif %}"></span>Burs İlanları</a>
+                        <a href="/teknofest" class="flex items-center gap-2.5 px-3 py-2 rounded-lg {% if active == 'tekno' %}bg-teal-50/80 text-teal-800 font-semibold{% else %}text-slate-500 hover:bg-slate-50 font-medium{% endif %} text-xs transition-all"><span class="w-1.5 h-1.5 rounded-full {% if active == 'tekno' %}bg-teal-600{% else %}bg-slate-300{% endif %}"></span>TEKNOFEST & Projeler</a>
+                    </div>
+                </div>
+
+                <a href="/etkinlikler" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium text-sm transition-all">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Etkinlikler & Zirveler
+                </a>
+
+                <a href="/kaydedilenler" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium text-sm transition-all">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    Kaydedilenler (<span id="saved-count">0</span>)
+                </a>
+            </div>
+        </div>
+        <div class="p-5 border-t border-slate-100">
+            <div class="bg-slate-50/80 p-3 rounded-xl border border-slate-200/80 text-center shadow-2xs">
+                <span class="text-xs font-bold text-slate-700 block mb-0.5">Akademik Pusula v2.0</span>
+                <span class="text-[11px] font-semibold text-teal-600 tracking-wide block">By Kerem & Göknil ✨</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- SAĞ İÇERİK -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-6 lg:px-8 py-4 flex justify-between items-center sticky top-0 z-40 shadow-xs">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 rounded-xl transition-colors flex items-center justify-center shadow-sm cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="text-sm font-medium text-slate-500 hidden sm:block"><span>Kategori Listesi</span></div>
+            </div>
+            <div class="text-sm font-bold text-teal-800 bg-teal-50 px-4 py-2 rounded-full border border-teal-200 shadow-sm">
+                <span>🚀 {{ title }}</span>
+            </div>
+        </header>
+
+        <div class="p-6 lg:p-12 max-w-7xl mx-auto w-full space-y-8">
+            
+            <!-- BAŞLIK VE "... İLAN LİSTELENİYOR" SAYACI -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">{{ title }}</h1>
+                    <p class="text-slate-500 text-sm mt-1">Üniversite öğrencileri için filtrelenmiş aktif ilan arşivi.</p>
+                </div>
+                <span class="text-xs font-bold text-teal-700 bg-teal-50 px-4 py-2 rounded-xl border border-teal-200 shadow-2xs self-start md:self-auto">
+                    📊 {{ opps|length }} İlan Listeleniyor
+                </span>
+            </div>
+
+            <!-- FİLTRELEME ÇUBUĞU (ARAMA + A'DAN Z'YE BÖLÜM SEÇİMİ) -->
+            {% if active == 'staj' %}
+            <form method="GET" action="/stajlar" class="glass-card p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-3">
+                <div class="flex-1 relative">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">🔍</span>
+                    <input type="text" name="search" value="{{ search_val or '' }}" placeholder="Pozisyon, şirket veya teknoloji arayın (Örn: Python, Baykar)..." 
+                           class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 outline-none focus:border-teal-500 font-medium">
+                </div>
+                
+                <div class="w-full md:w-80">
+                    <select name="bolum" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 outline-none focus:border-teal-500 font-medium cursor-pointer">
+                        <option value="tümü">🎓 Tüm Bölümler (A-Z)</option>
+                        <option value="acil yardım" {% if selected_bolum == 'acil yardım' %}selected{% endif %}>Acil Yardım ve Afet Yönetimi</option>
+                        <option value="adli" {% if selected_bolum == 'adli' %}selected{% endif %}>Adli Bilimler / Adalet</option>
+                        <option value="ağız ve diş" {% if selected_bolum == 'ağız ve diş' %}selected{% endif %}>Ağız ve Diş Sağlığı</option>
+                        <option value="aile ve tüketici" {% if selected_bolum == 'aile ve tüketici' %}selected{% endif %}>Aile ve Tüketici Bilimleri</option>
+                        <option value="aktüerya" {% if selected_bolum == 'aktüerya' %}selected{% endif %}>Aktüerya Bilimleri</option>
+                        <option value=" alman dili" {% if selected_bolum == 'alman dili' %}selected{% endif %}>Alman Dili ve Edebiyatı</option>
+                        <option value="ameliyathane" {% if selected_bolum == 'ameliyathane' %}selected{% endif %}>Ameliyathane Hizmetleri</option>
+                        <option value="amerikan" {% if selected_bolum == 'amerikan' %}selected{% endif %}>Amerikan Kültürü ve Edebiyatı</option>
+                        <option value="anestezi" {% if selected_bolum == 'anestezi' %}selected{% endif %}>Anestezi</option>
+                        <option value="antropoloji" {% if selected_bolum == 'antropoloji' %}selected{% endif %}>Antropoloji</option>
+                        <option value="arap dili" {% if selected_bolum == 'arap dili' %}selected{% endif %}>Arap Dili ve Edebiyatı</option>
+                        <option value="arkeoloji" {% if selected_bolum == 'arkeoloji' %}selected{% endif %}>Arkeoloji</option>
+                        <option value="aşçılık" {% if selected_bolum == 'aşçılık' %}selected{% endif %}>Aşçılık / Gastronomi</option>
+                        <option value="astronomi" {% if selected_bolum == 'astronomi' %}selected{% endif %}>Astronomi ve Uzay Bilimleri</option>
+                        <option value="avukatlık" {% if selected_bolum == 'avukatlık' %}selected{% endif %}>Avukatlık / Hukuk Stajı</option>
+                        <option value="bahçe" {% if selected_bolum == 'bahçe' %}selected{% endif %}>Bahçe Bitkileri</option>
+                        <option value="bankacılık" {% if selected_bolum == 'bankacılık' %}selected{% endif %}>Bankacılık ve Finans</option>
+                        <option value="basım" {% if selected_bolum == 'basım' %}selected{% endif %}>Basım ve Yayın Teknolojileri</option>
+                        <option value="beslenme" {% if selected_bolum == 'beslenme' %}selected{% endif %}>Beslenme ve Diyetetik</option>
+                        <option value="bilgi ve belge" {% if selected_bolum == 'bilgi ve belge' %}selected{% endif %}>Bilgi ve Belge Yönetimi</option>
+                        <option value="bilgisayar" {% if selected_bolum == 'bilgisayar' %}selected{% endif %}>Bilgisayar Mühendisliği</option>
+                        <option value="bilgisayar programcılığı" {% if selected_bolum == 'bilgisayar programcılığı' %}selected{% endif %}>Bilgisayar Programcılığı</option>
+                        <option value="bilişim" {% if selected_bolum == 'bilişim' %}selected{% endif %}>Bilişim Sistemleri ve Teknolojileri</option>
+                        <option value="biyokimya" {% if selected_bolum == 'biyokimya' %}selected{% endif %}>Biyokimya</option>
+                        <option value="biyoloji" {% if selected_bolum == 'biyoloji' %}selected{% endif %}>Biyoloji</option>
+                        <option value="biyomedikal" {% if selected_bolum == 'biyomedikal' %}selected{% endif %}>Biyomedikal Mühendisliği</option>
+                        <option value="biyoteknoloji" {% if selected_bolum == 'biyoteknoloji' %}selected{% endif %}>Biyoteknoloji</option>
+                        <option value="çalışma" {% if selected_bolum == 'çalışma' %}selected{% endif %}>Çalışma Ekonomisi ve Endüstri İlişkileri</option>
+                        <option value="ceza" {% if selected_bolum == 'ceza' %}selected{% endif %}>Ceza ve İnfaz / Adalet</option>
+                        <option value="çevre" {% if selected_bolum == 'çevre' %}selected{% endif %}>Çevre Mühendisliği</option>
+                        <option value="çocuk" {% if selected_bolum == 'çocuk' %}selected{% endif %}>Çocuk Gelişimi</option>
+                        <option value="çince" {% if selected_bolum == 'çince' %}selected{% endif %}>Çince Mütercim Tercümanlık</option>
+                        <option value="deniz" {% if selected_bolum == 'deniz' %}selected{% endif %}>Deniz Ulaştırma İşletme Mühendisliği</option>
+                        <option value="deri" {% if selected_bolum == 'deri' %}selected{% endif %}>Deri Mühendisliği</option>
+                        <option value="diyaliz" {% if selected_bolum == 'diyaliz' %}selected{% endif %}>Diyaliz</option>
+                        <option value="diş" {% if selected_bolum == 'diş' %}selected{% endif %}>Diş Hekimliği</option>
+                        <option value="dil ve konuşma" {% if selected_bolum == 'dil ve konuşma' %}selected{% endif %}>Dil ve Konuşma Terapisi</option>
+                        <option value="uçak gövde" {% if selected_bolum == 'uçak gövde' %}selected{% endif %}>Uçak Gövde - Motor Bakım</option>
+                        <option value="eczacılık" {% if selected_bolum == 'eczacılık' %}selected{% endif %}>Eczacılık Fakültesi</option>
+                        <option value="eğitim" {% if selected_bolum == 'eğitim' %}selected{% endif %}>Eğitim Bilimleri / PDR</option>
+                        <option value="ekonomi" {% if selected_bolum == 'ekonomi' %}selected{% endif %}>Ekonomi ve Finans</option>
+                        <option value="ekonometri" {% if selected_bolum == 'ekonometri' %}selected{% endif %}>Ekonometri</option>
+                        <option value="el sanatları" {% if selected_bolum == 'el sanatları' %}selected{% endif %}>Geleneksel Türk Sanatları</option>
+                        <option value="elektrik" {% if selected_bolum == 'elektrik' %}selected{% endif %}>Elektrik Mühendisliği</option>
+                        <option value="elektronik" {% if selected_bolum == 'elektronik' %}selected{% endif %}>Elektronik ve Haberleşme Mühendisliği</option>
+                        <option value="endüstri" {% if selected_bolum == 'endüstri' %}selected{% endif %}>Endüstri Mühendisliği</option>
+                        <option value="enerji" {% if selected_bolum == 'enerji' %}selected{% endif %}>Enerji Sistemleri Mühendisliği</option>
+                        <option value="felsefe" {% if selected_bolum == 'felsefe' %}selected{% endif %}>Felsefe ve Felsefe Grubu</option>
+                        <option value="fen bilgisi" {% if selected_bolum == 'fen bilgisi' %}selected{% endif %}>Fen Bilgisi Öğretmenliği</option>
+                        <option value="fizik" {% if selected_bolum == 'fizik' %}selected{% endif %}>Fizik / Fizik Mühendisliği</option>
+                        <option value="fizyoterapi" {% if selected_bolum == 'fizyoterapi' %}selected{% endif %}>Fizyoterapi ve Rehabilitasyon</option>
+                        <option value="fotoğraf" {% if selected_bolum == 'fotoğraf' %}selected{% endif %}>Fotoğraf ve Video</option>
+                        <option value="fransızca" {% if selected_bolum == 'fransızca' %}selected{% endif %}>Fransız Dili ve Edebiyatı</option>
+                        <option value="gastronomi" {% if selected_bolum == 'gastronomi' %}selected{% endif %}>Gastronomi ve Mutfak Sanatları</option>
+                        <option value="gayrimenkul" {% if selected_bolum == 'gayrimenkul' %}selected{% endif %}>Gayrimenkul Geliştirme ve Yönetimi</option>
+                        <option value="gazetecilik" {% if selected_bolum == 'gazetecilik' %}selected{% endif %}>Gazetecilik</option>
+                        <option value="genetik" {% if selected_bolum == 'genetik' %}selected{% endif %}>Genetik ve Biyomühendislik</option>
+                        <option value="gıda" {% if selected_bolum == 'gıda' %}selected{% endif %}>Gıda Mühendisliği</option>
+                        <option value="görsel sanatlar" {% if selected_bolum == 'görsel sanatlar' %}selected{% endif %}>Görsel Sanatlar ve Tasarım</option>
+                        <option value="halkla ilişkiler" {% if selected_bolum == 'halkla ilişkiler' %}selected{% endif %}>Halkla İlişkiler ve Tanıtım</option>
+                        <option value="harita" {% if selected_bolum == 'harita' %}selected{% endif %}>Harita Mühendisliği / Geomatik</option>
+                        <option value="hava trafik" {% if selected_bolum == 'hava trafik' %}selected{% endif %}>Hava Trafik Kontrol</option>
+                        <option value="hemşirelik" {% if selected_bolum == 'hemşirelik' %}selected{% endif %}>Hemşirelik Fakültesi</option>
+                        <option value="heykeltraşlık" {% if selected_bolum == 'heykeltraşlık' %}selected{% endif %}>Heykel Bölümü</option>
+                        <option value="hukuk" {% if selected_bolum == 'hukuk' %}selected{% endif %}>Hukuk Fakültesi</option>
+                        <option value="iç mimarlık" {% if selected_bolum == 'iç mimarlık' %}selected{% endif %}>İç Mimarlık ve Çevre Tasarımı</option>
+                        <option value="iklimlendirme" {% if selected_bolum == 'iklimlendirme' %}selected{% endif %}>İklimlendirme ve Soğutma</option>
+                        <option value="iktisat" {% if selected_bolum == 'iktisat' %}selected{% endif %}>İktisat Fakültesi</option>
+                        <option value="ilahiyat" {% if selected_bolum == 'ilahiyat' %}selected{% endif %}>İlahiyat / İslam İlimleri</option>
+                        <option value="ingilizce" {% if selected_bolum == 'ingilizce' %}selected{% endif %}>İngiliz Dili ve Edebiyatı / Mütercim</option>
+                        <option value="insan kaynakları" {% if selected_bolum == 'insan kaynakları' %}selected{% endif %}>İnsan Kaynakları Yönetimi</option>
+                        <option value="inşaat" {% if selected_bolum == 'inşaat' %}selected{% endif %}>İnşaat Mühendisliği</option>
+                        <option value="iş sağlığı" {% if selected_bolum == 'iş sağlığı' %}selected{% endif %}>İş Sağlığı ve Güvenliği</option>
+                        <option value="işletme" {% if selected_bolum == 'işletme' %}selected{% endif %}>İşletme Fakültesi</option>
+                        <option value="italyan" {% if selected_bolum == 'italyan' %}selected{% endif %}>İtalyan Dili ve Edebiyatı</option>
+                        <option value="jeofizik" {% if selected_bolum == 'jeofizik' %}selected{% endif %}>Jeofizik Mühendisliği</option>
+                        <option value="jeoloji" {% if selected_bolum == 'jeoloji' %}selected{% endif %}>Jeoloji Mühendisliği</option>
+                        <option value="kamu yönetimi" {% if selected_bolum == 'kamu yönetimi' %}selected{% endif %}>Kamu Yönetimi / Siyaset Bilimi</option>
+                        <option value="kanun" {% if selected_bolum == 'kanun' %}selected{% endif %}>Kanun / Hukuk / Adalet</option>
+                        <option value="karşılaştırmalı" {% if selected_bolum == 'karşılaştırmalı' %}selected{% endif %}>Karşılaştırmalı Edebiyat</option>
+                        <option value="kimya" {% if selected_bolum == 'kimya' %}selected{% endif %}>Kimya / Kimya Mühendisliği</option>
+                        <option value="kontrol" {% if selected_bolum == 'kontrol' %}selected{% endif %}>Kontrol ve Otomasyon Mühendisliği</option>
+                        <option value="kooperatifçilik" {% if selected_bolum == 'kooperatifçilik' %}selected{% endif %}>Kooperatifçilik</option>
+                        <option value="kriyoterapi" {% if selected_bolum == 'kriyoterapi' %}selected{% endif %}>Fizik Tedavi ve Rehabilitasyon</option>
+                        <option value="kültür" {% if selected_bolum == 'kültür' %}selected{% endif %}>Kültür Varlıklarını Koruma ve Onarım</option>
+                        <option value="lojistik" {% if selected_bolum == 'lojistik' %}selected{% endif %}>Uluslararası Lojistik ve Taşımacılık</option>
+                        <option value="maden" {% if selected_bolum == 'maden' %}selected{% endif %}>Maden Mühendisliği</option>
+                        <option value="makine" {% if selected_bolum == 'makine' %}selected{% endif %}>Makine Mühendisliği</option>
+                        <option value="maliye" {% if selected_bolum == 'maliye' %}selected{% endif %}>Maliye</option>
+                        <option value="malzeme" {% if selected_bolum == 'malzeme' %}selected{% endif %}>Malzeme Bilimi ve Mühendisliği</option>
+                        <option value="matematik" {% if selected_bolum == 'matematik' %}selected{% endif %}>Matematik / Matematik Mühendisliği</option>
+                        <option value="medya" {% if selected_bolum == 'medya' %}selected{% endif %}>Yeni Medya ve İletişim</option>
+                        <option value="mekatronik" {% if selected_bolum == 'mekatronik' %}selected{% endif %}>Mekatronik Mühendisliği</option>
+                        <option value="metalurji" {% if selected_bolum == 'metalurji' %}selected{% endif %}>Metalurji ve Malzeme Mühendisliği</option>
+                        <option value="meteoroloji" {% if selected_bolum == 'meteoroloji' %}selected{% endif %}>Meteoroloji Mühendisliği</option>
+                        <option value="mimarlık" {% if selected_bolum == 'mimarlık' %}selected{% endif %}>Mimarlık Fakültesi</option>
+                        <option value="moleküler" {% if selected_bolum == 'moleküler' %}selected{% endif %}>Moleküler Biyoloji ve Genetik</option>
+                        <option value="muhasebe" {% if selected_bolum == 'muhasebe' %}selected{% endif %}>Muhasebe ve Finansal Yönetim</option>
+                        <option value="mütercim" {% if selected_bolum == 'mütercim' %}selected{% endif %}>Mütercim - Tercümanlık (Çeşitli Diller)</option>
+                        <option value="müzecilik" {% if selected_bolum == 'müzecilik' %}selected{% endif %}>Müzecilik / Sanat Tarihi</option>
+                        <option value="nanoteknoloji" {% if selected_bolum == 'nanoteknoloji' %}selected{% endif %}>Nanoteknoloji Mühendisliği</option>
+                        <option value="odyoloji" {% if selected_bolum == 'odyoloji' %}selected{% endif %}>Odyoloji</option>
+                        <option value="okul öncesi" {% if selected_bolum == 'okul öncesi' %}selected{% endif %}>Okul Öncesi Öğretmenliği</option>
+                        <option value="optisyenlik" {% if selected_bolum == 'optisyenlik' %}selected{% endif %}>Optisyenlik</option>
+                        <option value="orman" {% if selected_bolum == 'orman' %}selected{% endif %}>Orman Mühendisliği</option>
+                        <option value="ortopedik" {% if selected_bolum == 'ortopedik' %}selected{% endif %}>Ortopedi / Fizyoterapi</option>
+                        <option value="otopsi" {% if selected_bolum == 'otopsi' %}selected{% endif %}>Otopsi Yardımcılığı / Adli</option>
+                        <option value="ölçme" {% if selected_bolum == 'ölçme' %}selected{% endif %}>Harita / Kadastro</option>
+                        <option value="pazarlama" {% if selected_bolum == 'pazarlama' %}selected{% endif %}>Pazarlama ve Reklamcılık</option>
+                        <option value="perfüzyon" {% if selected_bolum == 'perfüzyon' %}selected{% endif %}>Perfüzyon</option>
+                        <option value="petrol" {% if selected_bolum == 'petrol' %}selected{% endif %}>Petrol ve Doğalgaz Mühendisliği</option>
+                        <option value="peyzaj" {% if selected_bolum == 'peyzaj' %}selected{% endif %}>Peyzaj Mimarlığı</option>
+                        <option value="pilotaj" {% if selected_bolum == 'pilotaj' %}selected{% endif %}>Pilotaj / Havacılık</option>
+                        <option value="polis" {% if selected_bolum == 'polis' %}selected{% endif %}>Polis Meslek / Güvenlik Bilimleri</option>
+                        <option value="psikoloji" {% if selected_bolum == 'psikoloji' %}selected{% endif %}>Psikoloji / PDR</option>
+                        <option value="radyo" {% if selected_bolum == 'radyo' %}selected{% endif %}>Radyo, Televizyon ve Sinema</option>
+                        <option value="radyoterapi" {% if selected_bolum == 'radyoterapi' %}selected{% endif %}>Radyoterapi / Tıbbi Görüntüleme</option>
+                        <option value="rehberlik" {% if selected_bolum == 'rehberlik' %}selected{% endif %}>Rehberlik ve Psikolojik Danışmanlık</option>
+                        <option value="reklamcılık" {% if selected_bolum == 'reklamcılık' %}selected{% endif %}>Reklamcılık ve İletişim</option>
+                        <option value="rus dili" {% if selected_bolum == 'rus dili' %}selected{% endif %}>Rus Dili ve Edebiyatı</option>
+                        <option value="sağlık yönetimi" {% if selected_bolum == 'sağlık yönetimi' %}selected{% endif %}>Sağlık Yönetimi</option>
+                        <option value="sanat tarihi" {% if selected_bolum == 'sanat tarihi' %}selected{% endif %}>Sanat Tarihi</option>
+                        <option value="seramik" {% if selected_bolum == 'seramik' %}selected{% endif %}>Seramik ve Cam Tasarımı</option>
+                        <option value="siber güvenlik" {% if selected_bolum == 'siber güvenlik' %}selected{% endif %}>Siber Güvenlik Mühendisliği</option>
+                        <option value="sigortacılık" {% if selected_bolum == 'sigortacılık' %}selected{% endif %}>Sigortacılık ve Aktüerya</option>
+                        <option value="siyaset bilimi" {% if selected_bolum == 'siyaset bilimi' %}selected{% endif %}>Siyaset Bilimi ve Uluslararası İlişkiler</option>
+                        <option value="sosyal hizmet" {% if selected_bolum == 'sosyal hizmet' %}selected{% endif %}>Sosyal Hizmet</option>
+                        <option value="sosyoloji" {% if selected_bolum == 'sosyoloji' %}selected{% endif %}>Sosyoloji</option>
+                        <option value="spor" {% if selected_bolum == 'spor' %}selected{% endif %}>Spor Bilimleri / Beden Eğitimi</option>
+                        <option value="su ürünleri" {% if selected_bolum == 'su ürünleri' %}selected{% endif %}>Su Ürünleri Mühendisliği</option>
+                        <option value="sürdürülebilirlik" {% if selected_bolum == 'sürdürülebilirlik' %}selected{% endif %}>Sürdürülebilir Enerji / Çevre</option>
+                        <option value="tarih" {% if selected_bolum == 'tarih' %}selected{% endif %}>Tarih</option>
+                        <option value="tapu" {% if selected_bolum == 'tapu' %}selected{% endif %}>Tapu ve Kadastro</option>
+                        <option value="tarım" {% if selected_bolum == 'tarım' %}selected{% endif %}>Tarım Ekonomisi / Ziraat</option>
+                        <option value="tekstil" {% if selected_bolum == 'tekstil' %}selected{% endif %}>Tekstil Mühendisliği ve Tasarımı</option>
+                        <option value="teoloji" {% if selected_bolum == 'teoloji' %}selected{% endif %}>Teoloji / Din Bilimleri</option>
+                        <option value="tıp" {% if selected_bolum == 'tıp' %}selected{% endif %}>Tıp Fakültesi</option>
+                        <option value="tıbbi dokümantasyon" {% if selected_bolum == 'tıbbi dokümantasyon' %}selected{% endif %}>Tıbbi Dokümantasyon ve Sekreterlik</option>
+                        <option value="tıbbi laboratuvar" {% if selected_bolum == 'tıbbi laboratuvar' %}selected{% endif %}>Tıbbi Laboratuvar Teknikleri</option>
+                        <option value="turizm" {% if selected_bolum == 'turizm' %}selected{% endif %}>Turizm İşletmeciliği ve Otelcilik</option>
+                        <option value="türk dili" {% if selected_bolum == 'türk dili' %}selected{% endif %}>Türk Dili ve Edebiyatı</option>
+                        <option value="uluslararası ilişkiler" {% if selected_bolum == 'uluslararası ilişkiler' %}selected{% endif %}>Uluslararası İlişkiler ve Diplomasi</option>
+                        <option value="uluslararası ticaret" {% if selected_bolum == 'uluslararası ticaret' %}selected{% endif %}>Uluslararası Ticaret ve İşletmecilik</option>
+                        <option value="uzay" {% if selected_bolum == 'uzay' %}selected{% endif %}>Uzay Mühendisliği ve Havacılık</option>
+                        <option value="ümit" {% if selected_bolum == 'ümit' %}selected{% endif %}>Üroloji / Tıp Bilimleri</option>
+                        <option value="üretim" {% if selected_bolum == 'üretim' %}selected{% endif %}>Üretim Yönetimi ve Pazarlama</option>
+                        <option value="veteriner" {% if selected_bolum == 'veteriner' %}selected{% endif %}>Veteriner Fakültesi</option>
+                        <option value="yazılım" {% if selected_bolum == 'yazılım' %}selected{% endif %}>Yazılım Mühendisliği</option>
+                        <option value="yemek" {% if selected_bolum == 'yemek' %}selected{% endif %}>Gastronomi ve Mutfak Sanatları</option>
+                        <option value="yönetim bilişim sistemleri" {% if selected_bolum == 'yönetim bilişim sistemleri' %}selected{% endif %}>Yönetim Bilişim Sistemleri (YBS)</option>
+                        <option value="ziraat" {% if selected_bolum == 'ziraat' %}selected{% endif %}>Ziraat Fakültesi (Tüm Bölümler)</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all shadow-sm cursor-pointer">
+                    Filtrele 🚀
+                </button>
+            </form>
+            {% endif %}
+
+            <!-- İLANLAR GRID -->
+            {% if opps %}
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {% for opp in opps %}
+                    <div onclick="openModal('{{ opp[1]|e }}', '{{ opp[2]|e }}', '{{ opp[3]|e }}', '{{ opp[5]|e }}', `{{ opp[6]|e }}`)" 
+                         class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-xl hover:border-teal-500 transition-all duration-300 group flex flex-col relative cursor-pointer">
+                        
+                        <button onclick="event.stopPropagation(); toggleSave(this, '{{ opp[1]|e }}', '{{ opp[2]|e }}', '{{ opp[3]|e }}', '{{ opp[5]|e }}')" 
+                                class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-teal-50 text-slate-400 hover:text-teal-600 flex items-center justify-center transition-all shadow-sm save-btn cursor-pointer z-10" title="Kaydet">
+                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+
+                        <div class="flex justify-between items-start mb-4 pr-10">
+                            <span class="bg-teal-50 text-teal-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-teal-200">{{ opp[2] }}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-4 group-hover:text-teal-700 transition-colors leading-snug">{{ opp[1] }}</h3>
+                        
+                        <div class="flex flex-wrap gap-1.5 mb-6">
+                        {% if opp[5] %}
+                            {% for tag in opp[5].split(',') %}
+                                <span class="bg-slate-100/60 text-slate-600 px-2.5 py-0.5 rounded-md text-xs font-semibold border border-slate-200/60">#{{ tag.strip() }}</span>
+                            {% endfor %}
+                        {% endif %}
+                        </div>
+
+                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-100/80">
+                            <span class="deadline-badge font-bold text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg" data-deadline="{{ opp[3] }}">
+                                ⏳ Son Gün: {{ opp[3] }}
+                            </span>
+                            <button onclick="event.stopPropagation(); openModal('{{ opp[1]|e }}', '{{ opp[2]|e }}', '{{ opp[3]|e }}', '{{ opp[5]|e }}', `{{ opp[6]|e }}`)" 
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-sm">
+                                Başvur
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <div class="glass-card text-slate-500 p-12 rounded-2xl text-center border border-slate-200 font-medium text-lg shadow-sm">
+                    Aradığınız kriterlere uygun staj ilanı bulunamadı.
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- MODAL -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-all duration-300">
+        <div class="bg-white rounded-[2.5rem] max-w-2xl w-full shadow-2xl border border-slate-100 relative overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="logo-palette-gradient p-8 text-white relative flex flex-col justify-between">
+                <button onclick="closeModal()" class="absolute top-6 right-6 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all cursor-pointer backdrop-blur-sm">✕</button>
+                <div class="flex flex-wrap items-center gap-3 mb-4 relative z-10">
+                    <span id="modalCategory" class="bg-white/20 backdrop-blur-md text-teal-100 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20"></span>
+                    <span id="modalDeadlineBadge" class="bg-amber-400 text-slate-900 px-3.5 py-1.5 rounded-full text-xs font-extrabold shadow-sm"></span>
+                </div>
+                <h2 id="modalTitle" class="text-2xl lg:text-3xl font-extrabold text-white leading-tight relative z-10"></h2>
+            </div>
+            <div class="p-8 overflow-y-auto space-y-6 flex-1 bg-gradient-to-b from-slate-50/50 to-white">
+                <p id="modalDescription" class="text-slate-600 text-base leading-relaxed whitespace-pre-line font-light"></p>
+            </div>
+            <div class="p-6 bg-white border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400">Akademik Pusula</span>
+                <a href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3.5 rounded-2xl text-sm shadow-lg">Hemen Başvur 🚀</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('sidebar-closed'); }
+        function toggleDropdown() {
+            document.getElementById('dropdownMenu').classList.toggle('hidden');
+            document.getElementById('dropdownArrow').classList.toggle('rotate-180');
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date('2026-09-27');
+            document.querySelectorAll('.deadline-badge').forEach(badge => {
+                const deadlineStr = badge.getAttribute('data-deadline');
+                const diffDays = Math.ceil((new Date(deadlineStr) - today) / (1000 * 60 * 60 * 24));
+                if (diffDays <= 7 && diffDays >= 0) {
+                    badge.classList.remove('bg-rose-50', 'text-rose-500');
+                    badge.classList.add('bg-red-100', 'text-red-600', 'animate-pulse');
+                    badge.innerHTML = `🔥 Kritik: Son Gün ${deadlineStr}`;
+                } else { badge.classList.add('bg-rose-50', 'text-rose-500'); }
+            });
+        });
+        function openModal(title, kategori, deadline, tags, description) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalCategory').innerText = kategori;
+            const deadlineBadge = document.getElementById('modalDeadlineBadge');
+            const diffDays = Math.ceil((new Date(deadline) - new Date('2026-09-27')) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 7 && diffDays >= 0) {
+                deadlineBadge.className = "bg-rose-500 text-white px-3.5 py-1.5 rounded-full text-xs font-extrabold shadow-sm animate-pulse";
+                deadlineBadge.innerHTML = `🔥 Kritik: Son Gün ${deadline}`;
+            } else {
+                deadlineBadge.className = "bg-amber-400 text-slate-900 px-3.5 py-1.5 rounded-full text-xs font-extrabold shadow-sm";
+                deadlineBadge.innerHTML = `⏳ Son Başvuru: ${deadline}`;
+            }
+            document.getElementById('modalDescription').innerText = description || "Detaylı açıklama bulunmuyor.";
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.getElementById('detailModal').classList.add('flex');
+        }
+        function closeModal() { document.getElementById('detailModal').classList.remove('flex'); document.getElementById('detailModal').classList.add('hidden'); }
+        window.onclick = function(e) { if (e.target === document.getElementById('detailModal')) closeModal(); }
+        
+        function getSavedOpps() { return JSON.parse(localStorage.getItem('savedOpps') || '[]'); }
+        function updateSavedCount() { document.getElementById('saved-count').innerText = getSavedOpps().length; }
+        
+        window.onload = function() {
+            updateSavedCount();
+            const saved = getSavedOpps();
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                const match = btn.getAttribute('onclick').match(/'([^']+)'/);
+                if (match && saved.some(item => item.title === match[1])) {
+                    btn.classList.remove('bg-slate-100', 'text-slate-400');
+                    btn.classList.add('bg-teal-600', 'text-white', 'shadow-md');
+                    btn.querySelector('svg').setAttribute('fill', 'currentColor');
+                }
+            });
+        };
+    </script>
+</body>
+</html>
